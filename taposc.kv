@@ -1,0 +1,90 @@
+#:kivy 1.8.0
+
+<MainScreen>:
+    BoxLayout:
+        size_hint_y: 0.9
+        size_hint_x: 0.9
+        spacing: 50
+        orientation: 'vertical'
+        Label:
+            text: "TapOsc"
+            bold: True
+            size_hint_y: 0.3
+            font_size: 32
+            color: (0, 1, 0, 1)
+        Label:
+            text: "Send and Receive OSC data with your phone !"
+            size_hint_y: 0.2
+            font_size: 24
+            color: (0, 1, 0, 1)
+        BoxLayout:
+            spacing: 50
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Button:
+                text: 'Ecran 1'
+                font_size: 18
+                on_release: root.switch_to("Ecran 1")
+            Button:
+                text: 'Ecran 2'
+                font_size: 18
+                on_release: root.switch_to("Ecran 2")
+
+        BoxLayout:
+            spacing: 50
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Button:
+                text: 'Options'
+                font_size: 18
+                on_release: root.open_settings()
+            Button:
+                text: 'Play'
+                font_size: 18
+                on_release: root.do_play()
+            Button:
+                text: 'Quit'
+                font_size: 18
+                on_release: root.do_quit()
+
+<Screen1>:
+    BoxLayout:
+        Label:
+            text: 'ecran 1'
+            font_size: 36
+
+<Screen2>:
+    BoxLayout:
+        Label:
+            text: 'ecran 2'
+            font_size: 36
+
+<Screen3>:
+    BoxLayout:
+        Label:
+            text: 'ecran 3'
+            font_size: 36
+
+<Screen4>:
+    BoxLayout:
+        Label:
+            text: 'ecran 4'
+            font_size: 36
+
+<SettingsScreen>:
+    BoxLayout:
+        Label:
+            text: "Mon bouton d'options"
+            font_size: 36
+
+<JsonScreen>:
+    BoxLayout:
+        Label:
+            text: "Mon bouton d'options"
+            font_size: 36
+
+<OpenScreen>:
+    BoxLayout:
+        Label:
+            text: "Rien"
+            font_size: 36
