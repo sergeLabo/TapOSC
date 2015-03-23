@@ -1,5 +1,20 @@
 #:kivy 1.8.0
 
+##ScreenManager:
+    ##id: screen_manager
+    ##MainScreen:
+        ##id: main_screen
+        ##name: 'MainScreen'
+        ##manager: screen_manager
+    ##Screen1:
+        ##id: screen1
+        ##name: 'Screen1'
+        ##manager: screen_manager
+    ##SettingsScreen:
+        ##id: settings_screen
+        ##name: 'SettingsScreen'
+        ##manager: screen_manager
+
 <MainScreen>:
     BoxLayout:
         size_hint_y: 0.9
@@ -10,12 +25,12 @@
             text: "TapOsc"
             bold: True
             size_hint_y: 0.3
-            font_size: 32
+            font_size: "48dp"
             color: (0, 1, 0, 1)
         Label:
             text: "Send and Receive OSC data with your phone !"
             size_hint_y: 0.2
-            font_size: 24
+            font_size: "24dp"
             color: (0, 1, 0, 1)
         BoxLayout:
             spacing: 50
@@ -23,12 +38,14 @@
             orientation: 'horizontal'
             Button:
                 text: 'Ecran 1'
-                font_size: 18
-                on_release: root.switch_to("Ecran 1")
+                color: (0, 1, 0, 1)
+                font_size: "32dp"
+                on_release: root.manager.current = ("Ecran 1")
             Button:
                 text: 'Ecran 2'
-                font_size: 18
-                on_release: root.switch_to("Ecran 2")
+                color: (0, 1, 0, 1)
+                font_size: "32dp"
+                on_release: root.manager.current = ("Ecran 2")
 
         BoxLayout:
             spacing: 50
@@ -36,55 +53,63 @@
             orientation: 'horizontal'
             Button:
                 text: 'Options'
-                font_size: 18
-                on_release: root.open_settings()
+                color: (0, 1, 0, 1)
+                font_size: "32dp"
+                on_release: app.open_settings()
             Button:
                 text: 'Play'
-                font_size: 18
-                on_release: root.do_play()
+                color: (0, 1, 0, 1)
+                font_size: "32dp"
+                on_release: app.do_play()
             Button:
                 text: 'Quit'
-                font_size: 18
-                on_release: root.do_quit()
+                color: (0, 1, 0, 1)
+                font_size: "32dp"
+                on_release: app.do_quit()
 
 <Screen1>:
     BoxLayout:
+        orientation: "vertical"
         Label:
-            text: 'ecran 1'
-            font_size: 36
+            text: "Nom de app = {}".format(app.name) # taposc
+            font_size: "32dp"
+        BoxLayout:
+            Label:
+                text: ''
+            Button:
+                size_hint_x: 0.3
+                size_hint_y: 0.08
+                text: 'Quit'
+                color: (0, 1, 0, 1)
+                font_size: "24dp"
+                on_release: app.do_quit()
 
 <Screen2>:
     BoxLayout:
         Label:
             text: 'ecran 2'
-            font_size: 36
+            font_size: "48dp"
 
 <Screen3>:
     BoxLayout:
         Label:
             text: 'ecran 3'
-            font_size: 36
+            font_size: "48dp"
 
 <Screen4>:
     BoxLayout:
         Label:
             text: 'ecran 4'
-            font_size: 36
-
-<SettingsScreen>:
-    BoxLayout:
-        Label:
-            text: "Mon bouton d'options"
-            font_size: 36
+            font_size: "48dp"
 
 <JsonScreen>:
     BoxLayout:
         Label:
             text: "Mon bouton d'options"
-            font_size: 36
+            font_size: "48dp"
 
 <OpenScreen>:
     BoxLayout:
         Label:
             text: "Rien"
-            font_size: 36
+            font_size: "48dp"

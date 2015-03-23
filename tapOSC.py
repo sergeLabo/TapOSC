@@ -7,6 +7,7 @@ et reçois.
 Peut envoyer en json du UTF8
 '''
 
+import sys
 import kivy
 kivy.require('1.8.0')
 
@@ -14,10 +15,13 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.uix.floatlayout import FloatLayout
 
+from kivy.lib import osc
+
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window
 
 Window.size = (630, 1120)
+
 
 class MainScreen(Screen):
     pass
@@ -34,87 +38,91 @@ class Screen3(Screen):
 class Screen4(Screen):
     pass
 
-class SettingsScreen(Screen):
-    pass
-
 class JsonScreen(Screen):
     pass
 
 class OpenScreen(Screen):
     pass
 
+
 SCREENS = { 0: (MainScreen,       "Menu"),
             1: (Screen1,          "Ecran 1"),
             2: (Screen2,          "Ecran 2"),
             3: (Screen3,          "Ecran 3"),
             4: (Screen4,          "Ecran 4"),
-            5: (SettingsScreen,   "Options"),
-            6: (JsonScreen,       "Texte libre"),
-            7: (OpenScreen,       "Page libre")
+            5: (JsonScreen,       "Texte libre"),
+            6: (OpenScreen,       "Page libre")
            }
 
-class TapOSCMain(FloatLayout):
-    def __init__(self, **kwargs):
-        super().__init__()
-
-        self.ip = self.app.config.get('network', 'host')
-        self.sendport = int(self.app.config.get('network' , 'send_port'))
-        self.receiveport = int(self.app.config.get('network' , 'receive_port'))
-
-    def do_quit(self, value):
-        print("Strictly Quit in progess")
-        sys.exit()
 
 class TapOSCApp(App):
+    '''app est le parent de cette classe'''
     def build(self):
         scrman = ScreenManager()
-        for i in range(8):
+        for i in range(len(SCREENS)):
             scrman.add_widget(SCREENS[i][0](name=SCREENS[i][1]))
-
-        # switch to main screen
-        parent = self.root.parent
-        parent.remove_widget(self.root)
-        # lien avec TapOSCMain
-        self.root = TapOSCMain()
-        parent.add_widget(self.root)
-
         return scrman
 
     def build_config(self, config):
-        config.add_section('network')
-        config.set('network', 'host', '127.0.0.1')
-        config.set('network', 'receive_port', '9000')
-        config.set('network', 'send_port', '8000')
-        config.add_section('kivy')
+        '''Si le fichier *.ini n'existe pas,
+        il est crée avec ces valeurs par défaut.
+        Si il manque seulement des lignes, il ne fait rien !
+        '''
+        config.setdefaults('network',
+            {
+            'host': '127.0.0.1',
+            'receive_port': '9000',
+            'send_port': '8000'
+            })
+
+        config.setdefaults('kivy',
+            {
+            'log_level': 'debug',
+            'log_name': 'tapOSC_%y-%m-%d_%_.txt',
+            'log_dir': '/sdcard',
+            'log_enable': '1'
+            })
+        print("Fichier taposc.ini ok", config)
 
     def build_settings(self, settings):
+        '''Construit l'interface de l'écran Options,
+        appelé par app.open_settings() dans .kv
+        '''
+
         data = '''[
+                    { "type": "title", "title": "Network configuration" },
 
-            { "type": "string", "title": "Host",
-              "desc": "Ip address to use",
-              "section": "network", "key": "host" },
+                    { "type": "string", "title": "Host",
+                      "desc": "Ip address to use",
+                      "section": "network", "key": "host" },
 
-            { "type": "title", "title": "Network configuration" },
+                    { "type": "numeric", "title": "Send port",
+                      "desc": "Send port to use, from 1024 to 65535",
+                      "section": "network", "key": "send_port" },
 
-            { "type": "numeric", "title": "Send port",
-              "desc": "Send port to use, from 1024 to 65535",
-              "section": "network", "key": "send_port" },
+                    { "type": "numeric", "title": "Receive port",
+                      "desc": "Receive port to use, from 1024 to 65535",
+                      "section": "network", "key": "receive_port" }
+                ]'''
+        # self.config est le config de build_config
+        settings.add_json_panel('TapOSC', self.config, data=data)
 
-            { "type": "numeric", "title": "Receive port",
-              "desc": "Receive port to use, from 1024 to 65535",
-              "section": "network", "key": "receive_port" }
-
-        ]'''
-        settings.add_json_panel('KiviOSC', self.config, data=data)
-
-    def do_play(self):
+    def do_connect(self):
         config = self.config
         host = config.get('network', 'host')
-        sport = config.getint('monome', 'send_port')
-        rport = config.getint('monome', 'receive_port')
+        sport = config.getint('network', 'send_port')
+        rport = config.getint('network', 'receive_port')
+        print("host = {} sport = {} rport = {}".format(host, sport, rport))
+        # osc server
+        osc.init()
+        oscid = osc.listen(ipAddr=host, port=rport)
+        #osc.bind(oscid, some_api_callback, '/some_api')
 
-        # osc
-        #appel fichier asyncio
+
+    def do_quit(self):
+        print("Quit in TapOSCApp(App)")
+        sys.exit()
+
 
 if __name__ == '__main__':
     TapOSCApp().run()
