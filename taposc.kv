@@ -1,24 +1,7 @@
 #:kivy 1.8.0
 
-##ScreenManager:
-    ##id: screen_manager
-    ##MainScreen:
-        ##id: main_screen
-        ##name: 'MainScreen'
-        ##manager: screen_manager
-    ##Screen1:
-        ##id: screen1
-        ##name: 'Screen1'
-        ##manager: screen_manager
-    ##SettingsScreen:
-        ##id: settings_screen
-        ##name: 'SettingsScreen'
-        ##manager: screen_manager
-
 <MainScreen>:
     BoxLayout:
-        size_hint_y: 0.9
-        size_hint_x: 0.9
         spacing: 50
         orientation: 'vertical'
         Label:
@@ -28,7 +11,7 @@
             font_size: "48dp"
             color: (0, 1, 0, 1)
         Label:
-            text: "Send and Receive OSC data with your phone !"
+            text: '''Send and Receive OSC data\n      with your phone !'''
             size_hint_y: 0.2
             font_size: "24dp"
             color: (0, 1, 0, 1)
@@ -40,6 +23,7 @@
                 text: 'Ecran 1'
                 color: (0, 1, 0, 1)
                 font_size: "32dp"
+                #on_press:   root.do_connect()
                 on_release: root.manager.current = ("Ecran 1")
             Button:
                 text: 'Ecran 2'
@@ -68,19 +52,43 @@
                 on_release: app.do_quit()
 
 <Screen1>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: "Nom de app = {}".format(app.name) # taposc
-            font_size: "32dp"
+            size_hint_y: 0.95
+            font_size: "36dp"
+            text: "xy position"
+            color: (0, 1, 0, 1)
         BoxLayout:
+            size_hint_y: 0.05
+            canvas.before:
+                Color:
+                    rgba: 0.5, 0.5, 0.5, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
             Label:
-                text: ''
+                canvas.before:
+                    Color:
+                        rgba: 0.5, 0.5, 0.5, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                size_hint_x: 0.8
+                text: "Je suis le plus fort"
+                font_size: "16dp"
             Button:
-                size_hint_x: 0.3
-                size_hint_y: 0.08
+                size_hint_x: 0.2
                 text: 'Quit'
                 color: (0, 1, 0, 1)
+                background_color: (0.8, 0.8, 0.8, 1)
                 font_size: "24dp"
                 on_release: app.do_quit()
 

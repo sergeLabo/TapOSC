@@ -6,7 +6,9 @@ TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
 
 please see LICENSE file for details.
 
-##Installation on tablet or phone on ANDROID
+##Installation
+###On tablet or phone with ANDROID
+
 Download the TapOSC.apk file, install it.
 
 
