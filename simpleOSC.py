@@ -36,7 +36,9 @@ License : LGPL
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Modification Labomedia March 2015:
-    - a lot
+    - Convert with 2to3
+    -
+
 '''
 
 import OSC
@@ -53,12 +55,12 @@ def printing_handler(addr, tags, data, source):
     print("the actual data is : {}".format(data))
     print("---")
 
-def initOSCClient(ip='127.0.0.1', port=8000) :
+def initOSCClient(ip='127.0.0.1', port=8000):
     global basic_client
     basic_client = OSC.OSCClient()
     return basic_client
 
-def initOSCServer(ip='127.0.0.1', port=9000, mode=0) :
+def initOSCServer(ip='127.0.0.1', port=9000, mode=0):
     '''Mode 0 for basic server, 1 for threading server, 2 for forking server.
     '''
     global basic_server, st
@@ -77,7 +79,7 @@ def initOSCServer(ip='127.0.0.1', port=9000, mode=0) :
 def setOSCHandler(address="/print", hd=printing_handler) :
     basic_server.addMsgHandler(address, hd) # adding our function
 
-def closeOSC() :
+def closeOSC():
     if basic_client:
         basic_client.close()
     if basic_server:

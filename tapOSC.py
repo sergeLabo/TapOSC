@@ -33,9 +33,15 @@ class MainScreen(Screen):
 class Screen1(Screen):
     def __init__ (self,**kwargs):
         super(Screen1, self).__init__(**kwargs)
+        config = TapOSCApp.get_running_app().config
+        host = config.get('network', 'host')
+        sport = config.getint('network', 'sport')
+        rport = config.getint('network', 'rport')
+        print(host, sport, rport)
+
         # osc
-        self.host = "127.0.0.1"
-        self.sport = 8000
+        self.host = host
+        self.sport = sport
         self.clt = simpleOSC.initOSCClient(self.host, self.sport)
 
     def on_touch_move(self, touch):
@@ -135,6 +141,15 @@ class TapOSCApp(App):
                 ]'''
         # self.config est le config de build_config
         settings.add_json_panel('TapOSC', self.config, data=data)
+
+    # BEGIN ON_CONFIG_CHANGE
+    def on_config_change(self, config, section, key, value):
+        if config is self.config and key == "temp_type":
+            try:
+                self.root.children[0].update_weather()
+            except AttributeError:
+                pass
+    # END ON_CONFIG_CHANGE
 
     def do_connect(self):
         # osc
