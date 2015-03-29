@@ -1,4 +1,4 @@
-#N canvas 1445 89 902 587 12;
+#N canvas 476 162 887 632 12;
 #X declare -lib mrpeach;
 #X msg 213 210 disconnect;
 #X text 465 5 Receive example;
@@ -47,13 +47,13 @@
 #X obj 472 142 routeOSC /pos-X /pos-Y /back /forward /1;
 #X obj 693 184 routeOSC /xy;
 #X obj 551 204 print '/1/xy';
-#X obj 696 274 hsl 90 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 7120 1;
-#X obj 666 292 vsl 15 160 0 1 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 11965 1;
+#X obj 555 274 hsl 180 25 0 1 0 0 empty empty empty -2 -8 0 10 -257985
+-1 -1 0 1;
+#X obj 527 301 vsl 25 320 0 1 0 0 empty empty empty 0 -9 0 10 -4034
+-1 -1 0 1;
 #X obj 472 34 udpreceive 8000;
-#X obj 719 246 routeOSC /x;
-#X obj 616 246 routeOSC /y;
+#X obj 578 246 routeOSC /x;
+#X obj 475 246 routeOSC /y;
 #X text 559 117 route OSC for echo server or tapOSC test;
 #X connect 0 0 4 0;
 #X connect 3 0 4 0;

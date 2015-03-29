@@ -16,20 +16,10 @@ Download the TapOSC.apk file, install it.
 
 ###Dependancy
 
-#### python3-kivy
-
-
-#### iaosc
-OSC protocol with asyncio
-
-https://github.com/artfwo/aiosc
-
-License: Copyright (c) 2014 Artem Popov <artfwo@gmail.com>
-
-aiosc is licensed under the MIT license.
+#### python-kivy
 
 ##Buildozer
-#### Python 3.4 Buildozer Kivy
+#### Python Buildozer Kivy
 
 #### Compile Android application with Buildozer
 
