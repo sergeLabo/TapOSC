@@ -1,7 +1,33 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '0.19'
+'''
+TapOSC est une Application Android made with kivy
+
+Copyright (C) Labomedia March 2015
+
+    This file is part of TapOSC.
+
+    TapOSC is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TapOSC is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TapOSC.  If not, see <http://www.gnu.org/licenses/>. 2
+'''
+
+__version__ = '0.32'
+
+'''
+version
+0.32 modif options ne reset pas config, quit bug, thread non stoppé
+'''
 
 import sys, platform
 from time import sleep
@@ -29,27 +55,33 @@ class AndroidOnly(object):
         self.Hardware = None
         self.platform = sys.platform
         print("Platform = {}".format(self.platform))
+        self.loop = 1
+        # Osc Client only for this thread
+        self.android_clt = OSCClient()
 
         if 'linux3' in self.platform:
-            self.Hardware = autoclass('org.renpy.android.Hardware')
-            self.dpi = Hardware.getDPI()
-            print('DPI is', self.dpi)
-            self.Hardware.accelerometerEnable(True)
-            self.android_clt = OSCClient()
-            acc_thread = threading.Thread(target=send_acc)
-            acc_thread.start()
+            try:
+                self.Hardware = autoclass('org.renpy.android.Hardware')
+                self.Hardware.accelerometerEnable(True)
+                acc_thread = threading.Thread(target=self.send_acc)
+                acc_thread.start()
+            except:
+                print("Pb with AndroidOnly")
+        print("AndroidOnly init ok")
 
     def send_acc(self):
-        while 1:
+        while self.loop:
             self.acc = self.Hardware.accelerometerReading()
             msg = OSCMessage('/1/acc')
             msg.append(self.acc)
-            self.android_clt.sendto(msg, address)
+            self.android_clt.sendto(msg, self.address)
             # 60 fps: 0.015
-            sleep(1)
+            sleep(1)  #(0.015)
+
+    def stop_loop(self):
+        self.loop = 0
 
 class MainScreen(Screen):
-    '''OSC devrait être géré ici'''
     pass
 
 class Screen1(Screen):
@@ -63,8 +95,8 @@ class Screen1(Screen):
         sport = int(config.get('network', 'send_port'))
         self.address = host, sport
         self.clt = OSCClient()
-        # Envoi de acc avec un thread
         AndroidOnly(self.address)
+        print("Screen1 init ok")
 
     def on_touch_move(self, touch):
         xy_abs = int(touch.pos[0]), int(touch.pos[1])
@@ -95,6 +127,7 @@ class Screen2(Screen):
         sport = int(config.get('network', 'send_port'))
         self.address = host, sport
         self.clt = OSCClient()
+        print("Screen2 init ok")
 
     def do_button_on(self, iD, instance):
         print("button", iD, "on")
@@ -127,6 +160,7 @@ class Screen3(Screen):
         sport = int(config.get('network', 'send_port'))
         self.address = host, sport
         self.clt = OSCClient()
+        print("Screen3 init ok")
 
     def on_touch_move(self, touch):
         xy_abs = int(touch.pos[0]), int(touch.pos[1])
@@ -169,6 +203,7 @@ class Screen4(Screen):
         sport = int(config.get('network', 'send_port'))
         self.address = host, sport
         self.clt = OSCClient()
+        print("Screen4 init ok")
 
     def on_button_state(self, instance, value):
         index = instance.index
@@ -251,7 +286,6 @@ class TapOSCApp(App):
         settings.add_json_panel('TapOSC', self.config, data=data)
 
     def on_config_change(self, config, section, key, value):
-        '''J'affiche la modif mais je n'en fais rien'''
         if config is self.config:
             token = (section, key)
             if token == ('network', 'host'):
@@ -260,12 +294,17 @@ class TapOSCApp(App):
                 print('send_port', value)
             elif token == ('network', 'receive_port'):
                 print('receive_port', value)
+            # Reset des écrans
+            self.screen_manager.clear_widgets()
+            for i in range(len(SCREENS)):
+                self.screen_manager.add_widget(SCREENS[i][0](name=SCREENS[i][1]))
 
     def go_mainscreen(self):
         self.screen_manager.current = ("Menu")
 
     def on_stop(self):
         '''Déruit la fenêtre puis stop python'''
+        sys.exit()
         pass
 
     def do_quit(self):
