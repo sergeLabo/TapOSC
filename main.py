@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 '''
-TapOSC est une Application Android made with kivy
+TapOSC est une Application Android construite avec kivy
+et compilée avec Buildozer
 
 Copyright (C) Labomedia March 2015
 
@@ -22,10 +23,18 @@ Copyright (C) Labomedia March 2015
     along with TapOSC.  If not, see <http://www.gnu.org/licenses/>. 2
 '''
 
-__version__ = '0.32'
+__version__ = '0.34'
 
 '''
 version
+0.34 début de OSC Server pour recevoir, xy encore faux, thread bien stoppé
+image changée dans:
+/home/pierre/buildozer/.buildozer/android/platform/python-for-android/dist/TapOSC/
+private/lib/python2.7/site-packages/kivy/data/images
+/home/pierre/buildozer/.buildozer/android/platform/python-for-android/dist/TapOSC/
+python-install/lib/python2.7/site-packages/kivy/data/images
+0.33 OSC dans MainScreen pour tous les écrans, encore des répétitions
+mais ce n'est pas un problème
 0.32 modif options ne reset pas config, quit bug, thread non stoppé
 '''
 
@@ -44,7 +53,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.core.window import Window
 
-from OSC import OSCClient, OSCMessage, OSCBundle
+from OSC import OSCClient, OSCMessage, OSCBundle, OSCServer
 from jnius import autoclass
 
 class AndroidOnly(object):
@@ -53,6 +62,7 @@ class AndroidOnly(object):
         self.acc = 0
         self.dpi = 0
         self.Hardware = None
+        self.acc_thread = None
         self.platform = sys.platform
         print("Platform = {}".format(self.platform))
         self.loop = 1
@@ -63,8 +73,8 @@ class AndroidOnly(object):
             try:
                 self.Hardware = autoclass('org.renpy.android.Hardware')
                 self.Hardware.accelerometerEnable(True)
-                acc_thread = threading.Thread(target=self.send_acc)
-                acc_thread.start()
+                self.acc_thread = threading.Thread(target=self.send_acc)
+                self.acc_thread.start()
             except:
                 print("Pb with AndroidOnly")
         print("AndroidOnly init ok")
@@ -76,75 +86,129 @@ class AndroidOnly(object):
             msg.append(self.acc)
             self.android_clt.sendto(msg, self.address)
             # 60 fps: 0.015
-            sleep(1)  #(0.015)
+            sleep(0.015)
+
+    def reset_address(self, address):
+        self.address = address
 
     def stop_loop(self):
+        print("AndroidOnly Loop stop")
         self.loop = 0
 
-class MainScreen(Screen):
-    pass
+class Server(object):
+    '''Encours de construction'''
+    def __init__(self, address):
+        self.address = address
+        self.serv = OSCServer(self.address, client=None, return_port=0)
 
-class Screen1(Screen):
+class MainScreen(Screen):
+    '''Crée le client OSC qui est toujours le même, seule l'adresse utilisée
+    par sendto est mise à jour.'''
     def __init__ (self,**kwargs):
-        super(Screen1, self).__init__(**kwargs)
-        # window
-        self.ws = Window.size
-        # osc
+        super(MainScreen, self).__init__(**kwargs)
+        # OSC client isn't connected, created without address
+        # sendto use address, if address change, adress only mus't be updated
+        self.clt = OSCClient()
+        self.address = self.get_address()
+        self.android_thread = AndroidOnly(self.address)
+        # OSC Server only to receive OSC message from host with default "/info"
+        # TODO: OSC Client works well, this is only test
+        # address isn't updated
+        self.server = Server(self.address)
+        print("Main Screen init ok")
+
+    def reset_address(self, address):
+        self.address = address
+        self.android_thread.reset_address(address)
+        print("MainScreen: Reset OSC address with {}".format(address))
+
+    def get_address(self):
+        '''Return address with config, and set self.address'''
         config = TapOSCApp.get_running_app().config
         host = config.get('network', 'host')
         sport = int(config.get('network', 'send_port'))
         self.address = host, sport
-        self.clt = OSCClient()
-        AndroidOnly(self.address)
+        print("Address = {}".format(self.address))
+        return self.address
+
+class Screen1(Screen):
+    def __init__ (self,**kwargs):
+        super(Screen1, self).__init__(**kwargs)
+        self.ws = Window.size
+        self.clt, self.address = self.get_client_address()
+        print("OSC Client = {} address = {}".format(self.clt, self.address))
         print("Screen1 init ok")
+
+    def reset_address(self, address):
+        self.address = address
+        print("Screen1: Reset OSC address with {}".format(address))
+
+    def get_client_address(self):
+        # Accès à Menu = MainScreen pour récupérer self.clt
+        # Accès à screen manager dans TapOSCApp
+        screen_manager = TapOSCApp.get_running_app().screen_manager
+        # Accès à l'écran Menu
+        menu = screen_manager.get_screen("Menu")
+       # Accès à l'attibut clt
+        self.clt = menu.clt
+        # Accès à address
+        self.address = menu.get_address()
+        return self.clt, self.address
 
     def on_touch_move(self, touch):
         xy_abs = int(touch.pos[0]), int(touch.pos[1])
-        #print("Mouse Absolute", xy_abs)
         x_rel = float(xy_abs[0]) / self.ws[0]
         y_rel = float(xy_abs[1]) / self.ws[1]
-        print("Mouse Relative Position", x_rel, y_rel)
-
+        print("Mouse Relative Position {} {}".format(x_rel, y_rel))
         # OSC
         bundle = OSCBundle()
-
         msgx = OSCMessage('/1/xy/x')
         msgx.append(x_rel)
         bundle.append(msgx)
-
         msgy = OSCMessage('/1/xy/y')
         msgy.append(y_rel)
         bundle.append(msgy)
-
         self.clt.sendto(bundle, self.address)
 
 class Screen2(Screen):
     def __init__ (self,**kwargs):
         super(Screen2, self).__init__(**kwargs)
-        # osc
-        config = TapOSCApp.get_running_app().config
-        host = config.get('network', 'host')
-        sport = int(config.get('network', 'send_port'))
-        self.address = host, sport
-        self.clt = OSCClient()
+        self.clt, self.address = self.get_client_address()
+        print("OSC Client = {} address = {}".format(self.clt, self.address))
         print("Screen2 init ok")
 
+    def reset_address(self, address):
+        self.address = address
+        print("Screen1: Reset OSC address with {}".format(address))
+
+    def get_client_address(self):
+        # Accès à Menu = MainScreen pour récupérer self.clt
+        # Accès à screen manager dans TapOSCApp
+        screen_manager = TapOSCApp.get_running_app().screen_manager
+        # Accès à l'écran Menu
+        menu = screen_manager.get_screen("Menu")
+       # Accès à l'attibut clt
+        self.clt = menu.clt
+        # Accès à address
+        self.address = menu.get_address()
+        return self.clt, self.address
+
     def do_button_on(self, iD, instance):
-        print("button", iD, "on")
+        print("Button {} on".format(iD))
         # OSC envoi de iD, 1
         msg = OSCMessage(iD)
         msg.append(1)
         self.clt.sendto(msg, self.address)
 
     def do_button_off(self, iD, instance):
-        print("button", iD, "off")
+        print("Button {} off".format(iD))
         # OSC envoi de iD, 0
         msg = OSCMessage(iD)
         msg.append(0)
         self.clt.sendto(msg, self.address)
 
     def do_slider(self, iD, instance, value):
-        print("slider", iD, value)
+        print("Slider value {} = {}".format(iD, value))
         # OSC envoi de slider value
         msg = OSCMessage(iD)
         msg.append(value)
@@ -154,32 +218,42 @@ class Screen3(Screen):
     def __init__ (self,**kwargs):
         super(Screen3, self).__init__(**kwargs)
         self.ws = Window.size
-        # osc
-        config = TapOSCApp.get_running_app().config
-        host = config.get('network', 'host')
-        sport = int(config.get('network', 'send_port'))
-        self.address = host, sport
-        self.clt = OSCClient()
+        self.clt, self.address = self.get_client_address()
+        print("OSC Client = {} address = {}".format(self.clt, self.address))
         print("Screen3 init ok")
+
+    def reset_address(self, address):
+        self.address = address
+        print("Screen1: Reset OSC address with {}".format(address))
+
+    def get_client_address(self):
+        # Accès à Menu = MainScreen pour récupérer self.clt
+        # Accès à screen manager dans TapOSCApp
+        screen_manager = TapOSCApp.get_running_app().screen_manager
+        # Accès à l'écran Menu
+        menu = screen_manager.get_screen("Menu")
+       # Accès à l'attibut clt
+        self.clt = menu.clt
+        # Accès à address
+        self.address = menu.get_address()
+        return self.clt, self.address
 
     def on_touch_move(self, touch):
         xy_abs = int(touch.pos[0]), int(touch.pos[1])
         #print("Mouse Absolute", xy_abs)
+        # TODO faux only over button
         x_rel = float(xy_abs[0]) / self.ws[0]
         y_rel = float(xy_abs[1]) / self.ws[1]
-        print("Mouse Relative Position", x_rel, y_rel)
+        print("Mouse Relative Position {} {}".format(x_rel, y_rel))
 
         # OSC
         bundle = OSCBundle()
-
         msgx = OSCMessage('/3/xy/x')
         msgx.append(x_rel)
         bundle.append(msgx)
-
         msgy = OSCMessage('/3/xy/y')
         msgy.append(y_rel)
         bundle.append(msgy)
-
         self.clt.sendto(bundle, self.address)
 
     def do_slider(self, iD, instance, value):
@@ -197,30 +271,38 @@ class Screen4(Screen):
             btn = TapOscButton(index=x)
             btn.bind(state=self.on_button_state)
             self.blanche.add_widget(btn)
-        # osc
-        config = TapOSCApp.get_running_app().config
-        host = config.get('network', 'host')
-        sport = int(config.get('network', 'send_port'))
-        self.address = host, sport
-        self.clt = OSCClient()
+        self.clt, self.address = self.get_client_address()
+        print("OSC Client = {} address = {}".format(self.clt, self.address))
         print("Screen4 init ok")
+
+    def reset_address(self, address):
+        self.address = address
+        print("Screen4: Reset OSC address with {}".format(address))
+
+    def get_client_address(self):
+        # Accès à Menu = MainScreen pour récupérer self.clt
+        # Accès à screen manager dans TapOSCApp
+        screen_manager = TapOSCApp.get_running_app().screen_manager
+        # Accès à l'écran Menu
+        menu = screen_manager.get_screen("Menu")
+       # Accès à l'attibut clt
+        self.clt = menu.clt
+        # Accès à address
+        self.address = menu.get_address()
+        return self.clt, self.address
 
     def on_button_state(self, instance, value):
         index = instance.index
         if value == 'down':
-            value = 1
+            value = str(index)
         else:
             value = 0
-
         # OSC
-        msg = OSCMessage('/4/b/' + str(index))
+        msg = OSCMessage('/4/b')
         msg.append(value)
         self.clt.sendto(msg, self.address)
 
 class TapOscButton(Button):
-    index = NumericProperty(0)
-
-class TapOscSlider(Slider):
     index = NumericProperty(0)
 
 SCREENS = { 0: (MainScreen,       "Menu"),
@@ -233,6 +315,7 @@ class TapOSCApp(App):
     '''app est le parent de cette classe dans kv.'''
     def build(self):
         '''Exécuté en premier après run()'''
+
         # Création des écrans
         self.screen_manager = ScreenManager()
         for i in range(len(SCREENS)):
@@ -249,23 +332,23 @@ class TapOSCApp(App):
         Si il manque seulement des lignes, il ne fait rien !
         '''
         config.setdefaults('network',
-            {
-            'host': '192.168.0.103',
-            'receive_port': '9000',
-            'send_port': '8000'
-            })
+            { 'host': '192.168.1.4',
+              'receive_port': '9000',
+              'send_port': '8000'})
 
         config.setdefaults('kivy',
-            {
-            'log_level': 'debug',
-            'log_name': 'tapOSC_%y-%m-%d_%_.txt',
-            'log_dir': '/sdcard',
-            'log_enable': '1'
-            })
+            { 'log_level': 'debug',
+              'log_name': 'tapOSC_%y-%m-%d_%_.txt',
+              'log_dir': '/sdcard',
+              'log_enable': '1'})
+
+        config.setdefaults('postproc',
+            { 'double_tap_time': 250,
+              'double_tap_distance': 20})
 
     def build_settings(self, settings):
-        '''Construit l'interface de l'écran Options,
-        appelé par app.open_settings() dans .kv
+        '''Construit l'interface de l'écran Options, pour TapOSC seul,
+        Kivy est par défaut, appelé par app.open_settings() dans .kv
         '''
         data = '''[
                     { "type": "title", "title": "Network configuration" },
@@ -286,30 +369,36 @@ class TapOSCApp(App):
         settings.add_json_panel('TapOSC', self.config, data=data)
 
     def on_config_change(self, config, section, key, value):
+        host = self.config.get('network', 'host')
+        sport = self.config.get('network', 'send_port')
+        rport = self.config.get('network', 'receive_port')
         if config is self.config:
             token = (section, key)
             if token == ('network', 'host'):
-                print('host', value)
+                host = value
+                print('New host = {}'.format(value))
             elif token == ('network', 'send_port'):
-                print('send_port', value)
+                sport = int(value)
+                print('New send_port = {}'.format(value))
             elif token == ('network', 'receive_port'):
-                print('receive_port', value)
-            # Reset des écrans
-            self.screen_manager.clear_widgets()
+                rport = int(value)
+                print('New receive_port = {}'.format(value))
+            # Reset OSC address only in all screen
+            addr = host, sport
             for i in range(len(SCREENS)):
-                self.screen_manager.add_widget(SCREENS[i][0](name=SCREENS[i][1]))
+                self.screen_manager.get_screen(SCREENS[i][1]).reset_address(addr)
 
     def go_mainscreen(self):
         self.screen_manager.current = ("Menu")
 
-    def on_stop(self):
-        '''Déruit la fenêtre puis stop python'''
-        sys.exit()
-        pass
-
     def do_quit(self):
-        self.on_stop()
-        print("Quit in TapOSCApp(App)")
+        # Accès à screen manager dans TapOSCApp
+        screen_manager = TapOSCApp.get_running_app().screen_manager
+        # Accès à l'écran Menu
+        menu = screen_manager.get_screen("Menu")
+        # MainScreen is son of AndroidOnly, donc il hérite de stoop_loop
+        menu.android_thread.stop_loop()
+        print("Quit in TapOSCApp(App):\n   Thread is stopped: True or False ?")
         sys.exit()
 
 if __name__ == '__main__':

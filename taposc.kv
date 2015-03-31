@@ -28,7 +28,6 @@
                 text: 'Ecran 1'
                 color: (0, 1, 0, 1)
                 font_size: "28dp"
-                #on_press:   root.do_connect()
                 on_release: root.manager.current = ("Ecran 1")
             Button:
                 background_color: (0.8, 0.8, 0, 1)
@@ -95,7 +94,7 @@
                     size: self.size
             Label:
                 size_hint_x: 0.8
-                text: "Je suis le plus fort"
+                text: "Info from host"
                 font_size: "16dp"
             Button:
                 size_hint_x: 0.2
@@ -219,7 +218,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Je suis le plus fort"
+                    text: "Info from host"
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2
@@ -295,8 +294,6 @@
                         range: 0, 1
                         value: 0
                         on_value: root.do_slider("/3/s8", *args)
-        ##BoxLayout:
-            ##size_hint_y: 0.02
         BoxLayout:
             size_hint_y: 0.05
             BoxLayout:
@@ -308,7 +305,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Je suis le plus fort"
+                    text: "Info from host"
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2
@@ -320,7 +317,6 @@
 
 <Screen4>:
     blanche: blanche
-    #noire: noire
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -331,12 +327,6 @@
         BoxLayout:
             id: blanche
             size_hint_y: 0.64
-            ##AnchorLayout:
-                ##anchor_x: 'left'
-                ##anchor_y: 'top'
-                ##BoxLayout:
-                    ##id: noire
-                    ##size_hint_y: 0.40
         Label:
             size_hint_y: 0.15
             text: ""
@@ -351,7 +341,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Je suis le plus fort"
+                    text: "Info from host"
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2
