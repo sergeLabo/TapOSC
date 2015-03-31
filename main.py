@@ -23,16 +23,28 @@ Copyright (C) Labomedia March 2015
     along with TapOSC.  If not, see <http://www.gnu.org/licenses/>. 2
 '''
 
-__version__ = '0.34'
+__version__ = '1.00'
 
 '''
 version
+1.00 reste bug xy et reception de host
+0.36 rien dans pd
+couleur ok, image changée dans
+/media/data500/major_files/3_D/3D_current/aprojets/buildozer/.buildozer/android/
+platform/python-for-android/dist/TapOSC/private/lib/python2.7/site-packages/kivy/
+data/images
+/media/data500/major_files/3_D/3D_current/aprojets/buildozer/.buildozer/android/
+platform/python-for-android/dist/TapOSC/python-install/lib/python2.7/site-packages/
+kivy/data/images
+0.35 class Server commentée ok sur tablette, quit ok, mais toujours bleu !
 0.34 début de OSC Server pour recevoir, xy encore faux, thread bien stoppé
+bug sur tablette
 image changée dans:
 /home/pierre/buildozer/.buildozer/android/platform/python-for-android/dist/TapOSC/
 private/lib/python2.7/site-packages/kivy/data/images
 /home/pierre/buildozer/.buildozer/android/platform/python-for-android/dist/TapOSC/
 python-install/lib/python2.7/site-packages/kivy/data/images
+mais je n'utilise pas ce buildozer,mais celui dans data500
 0.33 OSC dans MainScreen pour tous les écrans, encore des répétitions
 mais ce n'est pas un problème
 0.32 modif options ne reset pas config, quit bug, thread non stoppé
@@ -92,14 +104,14 @@ class AndroidOnly(object):
         self.address = address
 
     def stop_loop(self):
-        print("AndroidOnly Loop stop")
+        print("AndroidOnly Loop stop: The answer is True")
         self.loop = 0
 
-class Server(object):
-    '''Encours de construction'''
-    def __init__(self, address):
-        self.address = address
-        self.serv = OSCServer(self.address, client=None, return_port=0)
+##class Server(object):
+    ##'''Encours de construction'''
+    ##def __init__(self, address):
+        ##self.address = address
+        ##self.serv = OSCServer(self.address, client=None, return_port=0)
 
 class MainScreen(Screen):
     '''Crée le client OSC qui est toujours le même, seule l'adresse utilisée
@@ -114,7 +126,7 @@ class MainScreen(Screen):
         # OSC Server only to receive OSC message from host with default "/info"
         # TODO: OSC Client works well, this is only test
         # address isn't updated
-        self.server = Server(self.address)
+        #self.server = Server(self.address)
         print("Main Screen init ok")
 
     def reset_address(self, address):
@@ -396,7 +408,6 @@ class TapOSCApp(App):
         screen_manager = TapOSCApp.get_running_app().screen_manager
         # Accès à l'écran Menu
         menu = screen_manager.get_screen("Menu")
-        # MainScreen is son of AndroidOnly, donc il hérite de stoop_loop
         menu.android_thread.stop_loop()
         print("Quit in TapOSCApp(App):\n   Thread is stopped: True or False ?")
         sys.exit()

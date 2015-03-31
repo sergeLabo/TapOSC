@@ -1,9 +1,10 @@
 ## TapOSC
 #### by Labomedia
-TapOSC is a OSC control surface for smartphone, made with Kivy.
+TapOSC is an Android Application, made with Kivy.
+
+TapOSC is OSC control surface for smartphone.
 
 TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
-
 please see LICENSE file for details.
 
 ## Andoid application
