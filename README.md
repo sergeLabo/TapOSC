@@ -29,6 +29,7 @@ Pyhton3 OSC.py version is on github
 ## Installation
 ### Dependancy
 #### python-kivy
+[See Installation](http://wiki.labomedia.org/index.php/2_Kivy:_Installation)
 
 #### pyjnuis
 
