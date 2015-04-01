@@ -1,12 +1,12 @@
-#N canvas 1443 249 1118 648 12;
+#N canvas 1759 79 1118 818 12;
 #X declare -lib mrpeach;
 #X obj 12 70 unpackOSC;
 #X obj 12 105 pipelist;
 #X obj 12 187 routeOSC /xy;
 #X obj 40 274 hsl 180 25 0 1 0 0 empty empty empty -2 -8 0 10 -257985
--1 -1 0 1;
+-1 -1 14362 1;
 #X obj 12 301 vsl 25 320 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 23670 1;
 #X obj 37 218 routeOSC /x;
 #X obj 12 246 routeOSC /y;
 #X text 101 5 route OSC for tapOSC test;
@@ -16,29 +16,29 @@
 #X obj 130 34 import mrpeach;
 #X obj 258 180 routeOSC /s1;
 #X obj 366 200 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 7128 1;
 #X obj 366 232 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 7216 1;
 #X obj 258 212 routeOSC /s2;
 #X text 5 5 Receive test:;
 #X obj 366 265 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 7051 1;
 #X obj 366 297 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 7260 1;
 #X obj 365 332 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 9329 1;
 #X obj 364 369 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 6534 1;
 #X obj 258 245 routeOSC /s3;
 #X obj 258 277 routeOSC /s4;
 #X obj 258 312 routeOSC /s5;
 #X obj 258 349 routeOSC /s6;
 #X obj 483 201 vsl 10 150 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 7728 1;
 #X obj 442 169 routeOSC /s7;
 #X obj 442 145 routeOSC /s8;
 #X obj 500 201 vsl 10 150 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 7601 1;
 #X obj 363 587 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 258 376 routeOSC /b1;
@@ -65,33 +65,33 @@
 #X obj 263 568 routeOSC /b8;
 #X obj 571 145 routeOSC /xy;
 #X obj 599 232 hsl 120 15 0 1 0 0 empty empty empty -2 -8 0 10 -257985
--1 -1 0 1;
+-1 -1 9381 1;
 #X obj 571 259 vsl 15 200 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 9631 1;
 #X obj 596 176 routeOSC /x;
 #X obj 571 204 routeOSC /y;
 #X obj 735 212 routeOSC /s1;
 #X obj 843 232 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 4178 1;
 #X obj 843 264 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 6108 1;
 #X obj 735 244 routeOSC /s2;
 #X obj 843 297 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 6527 1;
 #X obj 843 329 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 6913 1;
 #X obj 842 364 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 7735 1;
 #X obj 841 398 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 3048 1;
 #X obj 735 277 routeOSC /s3;
 #X obj 735 309 routeOSC /s4;
 #X obj 735 344 routeOSC /s5;
 #X obj 736 378 routeOSC /s6;
 #X obj 843 429 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 8339 1;
 #X obj 842 461 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 8205 1;
 #X obj 736 409 routeOSC /s7;
 #X obj 736 441 routeOSC /s8;
 #X obj 1021 195 print;
@@ -102,20 +102,32 @@
 -1 -1 0 1;
 #X obj 138 316 unpack f f f;
 #X obj 141 485 hsl 100 10 -12 12 0 0 empty empty empty -2 -8 0 10 -162280
--1 -1 0 1;
+-1 -1 4910 1;
 #X obj 127 513 vsl 10 100 -12 12 0 0 empty empty empty 0 -9 0 10 -162280
--1 -1 0 1;
+-1 -1 8731 1;
 #X obj 127 382 vsl 10 100 -12 12 0 0 empty empty empty 0 -9 0 10 -162280
--1 -1 0 1;
-#X obj 138 247 print /acc;
-#X obj 12 34 udpreceive 8000;
+-1 -1 6578 1;
 #X obj 986 125 routeOSC /4/b;
+#X msg 21 748 disconnect;
+#X obj 220 699 packOSC;
+#X obj 220 768 udpsend;
+#X obj 220 801 tgl 15 0 empty empty empty 8 -8 0 10 -4034 -1 -1 0 1
+;
+#X text 6 675 Send example without bundles;
+#X obj 218 634 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 220 669 send /info \$1;
+#X obj 330 738 print /info;
+#X msg 339 649 Texte anticonstitutionnel en provenance de pure data
+;
+#X obj 12 34 udpreceive 8000;
+#X msg 20 710 connect 192.168.1.2 9000;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 1 0 8 0;
 #X connect 1 0 9 0;
 #X connect 1 0 69 0;
-#X connect 1 0 77 0;
+#X connect 1 0 75 0;
 #X connect 2 0 5 0;
 #X connect 2 0 6 0;
 #X connect 5 0 3 0;
@@ -146,7 +158,6 @@
 #X connect 9 0 64 0;
 #X connect 9 0 65 0;
 #X connect 10 0 71 0;
-#X connect 10 0 75 0;
 #X connect 12 0 13 0;
 #X connect 15 0 14 0;
 #X connect 21 0 17 0;
@@ -182,6 +193,14 @@
 #X connect 71 0 72 0;
 #X connect 71 1 73 0;
 #X connect 71 2 74 0;
-#X connect 76 0 0 0;
-#X connect 77 0 66 0;
-#X connect 77 0 70 0;
+#X connect 75 0 66 0;
+#X connect 75 0 70 0;
+#X connect 76 0 78 0;
+#X connect 77 0 78 0;
+#X connect 78 0 79 0;
+#X connect 81 0 84 0;
+#X connect 82 0 77 0;
+#X connect 82 0 83 0;
+#X connect 84 0 82 0;
+#X connect 85 0 0 0;
+#X connect 86 0 78 0;
