@@ -26,11 +26,12 @@ Copyright (C) Labomedia March 2015
 '''
 
 
-__version__ = '0.57'
+__version__ = '0.58'
 
 
 '''
 version
+0.58 on config change pour window rotation
 0.57 buildozer avec landscape, définir rotation dans settings pour portrait
 0.56 30 fps
 0.55 liste pour acc
@@ -58,6 +59,7 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.core.window import Window
+from kivy.config import Config
 
 from OSC import OSCClient, OSCMessage, OSCServer
 from jnius import autoclass
@@ -510,6 +512,11 @@ class TapOSCApp(App):
             if token == ('network', 'receive_port'):
                 # Restart the server with new address
                 self.screen_manager.get_screen("Menu").restart_server()
+
+        if section == 'graphics' and key == 'rotation':
+            Config.set('graphics', 'rotation', int(value))
+            print("Screen rotation = {}".format(value))
+
 
     def go_mainscreen(self):
         '''Retour au menu principal depuis les autres écrans.'''
