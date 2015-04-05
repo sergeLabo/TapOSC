@@ -16,7 +16,7 @@
             font_size: "48dp"
             color: (0, 1, 0, 1)
         Label:
-            text: '''Send and Receive OSC data\n      with your phone !'''
+            text: '''Envoyez et recevez des données en OSC\n        avec votre smartphone'''
             size_hint_y: 0.2
             font_size: "24dp"
             color: (0, 1, 0, 1)
@@ -59,7 +59,7 @@
                 on_release: app.open_settings()
             Button:
                 background_color: (0.8, 0.8, 0, 1)
-                text: 'Quit'
+                text: 'Quitter'
                 color: (0, 1, 0, 1)
                 font_size: "28dp"
                 on_release: app.do_quit()
@@ -76,13 +76,13 @@
         Label:
             size_hint_y: 0.50
             font_size: "36dp"
-            text: "xy position"
+            text: "Position xy"
             color: (0, 1, 0, 1)
         Label:
             id: accelerometer
             size_hint_y: 0.45
             font_size: "36dp"
-            text: "Accelerometer"
+            text: "Accéléromètre"
             color: (0, 1, 0, 1)
         BoxLayout:
             size_hint_y: 0.05
@@ -94,7 +94,7 @@
                     size: self.size
             Label:
                 size_hint_x: 0.8
-                text: "Info from host: {}".format(root.info)
+                text: "Info:  {}".format(root.info)
                 font_size: "16dp"
             Button:
                 size_hint_x: 0.2
@@ -218,7 +218,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Info from host: {}".format(root.info)
+                    text: "Info: {}".format(root.info)
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2
@@ -249,7 +249,7 @@
                     color: (0, 1, 0, 1)
                     background_color: (0, 0.8, 0, 1)
                     font_size: "24dp"
-                    text: "xy position"
+                    text: "Position xy"
                 BoxLayout:
                     orientation: "vertical"
                     spacing: 10
@@ -305,7 +305,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Info from host: {}".format(root.info)
+                    text: "Info: {}".format(root.info)
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2
@@ -341,7 +341,7 @@
                         size: self.size
                 Label:
                     size_hint_x: 0.8
-                    text: "Info from host: {}".format(root.info)
+                    text: "Info: {}".format(root.info)
                     font_size: "16dp"
                 Button:
                     size_hint_x: 0.2

@@ -5,6 +5,8 @@
 TapOSC est une Application Android construite avec kivy
 et compilée avec Buildozer
 
+ZORG: "Vous voulez quelque chose, faites le vous mëme !"
+
 Copyright (C) Labomedia March 2015
 
     This file is part of TapOSC.
@@ -24,20 +26,22 @@ Copyright (C) Labomedia March 2015
 '''
 
 
-__version__ = '0.45'
+__version__ = '0.57'
 
 
 '''
 version
-0.45 nom de fonction clt address maj
-0.44 int dans ecran 4, correction on config change
-0.43 avec get lan ip, ok PC4 Atom
-0.42 adresse serveur avec 127.0.0.1
-0.41 dossier clean
-0.40 sans serveur
-0.39 with comments
-0.38 avec server, ne démarre pas
-0.37 xy correction
+0.57 buildozer avec landscape, définir rotation dans settings pour portrait
+0.56 30 fps
+0.55 liste pour acc
+0.54 xyz inversé en yxz dans acc
+0.53 window size recalculé à chaque appel,
+0.52 reset android ok, plus de bundle, bug xy si ecran vertical
+0.51 pas de reset de l'adresse android sur on_config_change, xy ecran 3 bug
+0.50 android clt remis
+0.49 timeout=0.002
+0.48 correction erreur addr pour android et main
+0.47 OSC client de AndroidOnly est le client de MainScreen
 '''
 
 import sys
@@ -55,7 +59,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.core.window import Window
 
-from OSC import OSCClient, OSCMessage, OSCBundle, OSCServer
+from OSC import OSCClient, OSCMessage, OSCServer
 from jnius import autoclass
 
 
@@ -78,18 +82,17 @@ def get_lan_ip():
 class AndroidOnly(object):
     '''Cette classe crée un thread si un accéléromètre existe, et si oui
     envoie les accélérations à 60 fps.'''
-    def __init__(self, address):
-        '''Address = Client address.'''
-        self.address = address
-        self.acc = 0
-        self.dpi = 0
+    def __init__(self, clt, address):
+        '''Clt pour cette classe seule, Address = Client address.'''
         self.hardware = None
         self.acc_thread = None
         self.platform = sys.platform
         print("Platform = {}".format(self.platform))
         self.loop = 1
-        # Osc Client only for this thread
-        self.android_clt = OSCClient()
+        # Osc Client de MainScreen
+        #self.android_clt = OSCClient()
+        self.android_clt = clt
+        self.address = address
 
         # Il faut vérifier sur plusieurs téléphones: linux3
         if 'linux3' in self.platform:
@@ -105,12 +108,12 @@ class AndroidOnly(object):
     def send_acc(self):
         '''Infinite loop to send acc at 60 fps, loop ended with self.loop.'''
         while self.loop:
-            self.acc = self.hardware.accelerometerReading()
+            acc = self.hardware.accelerometerReading()
             msg = OSCMessage('/1/acc')
-            msg.append(self.acc)
+            msg.append([acc[1], acc[0], acc[2]])
             self.android_clt.sendto(msg, self.address)
             # 60 fps: 0.015
-            sleep(0.015)
+            sleep(0.03)
 
     def reset_address(self, address):
         self.address = address
@@ -127,10 +130,10 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         # OSC client isn't connected, created without address
-        # sendto use address, if address change, adress only mus't be updated
+        # sendto use address, if address change, adress only must be updated
         self.clt = OSCClient()
-        self.clt_addr = self.get_clt_svr_address()[0]
-        self.android_thread = AndroidOnly(self.clt_addr)
+        self.clt_addr, self.svr_addr = self.get_clt_svr_address()
+        self.android_thread = AndroidOnly(self.clt, self.clt_addr)
         self.server = None
         self.create_server(self.svr_addr)
         print("Main Screen init ok")
@@ -186,7 +189,6 @@ class Screen1(Screen):
 
     def __init__(self, **kwargs):
         super(Screen1, self).__init__(**kwargs)
-        self.ws = Window.size
         self.clt, self.clt_addr = self.get_clt_and_address()
         print("OSC Client = {} address = {}".format(self.clt, self.clt_addr))
         # Info from server : set with info from server
@@ -216,19 +218,16 @@ class Screen1(Screen):
 
     def on_touch_move(self, touch):
         '''Si tap sur l'écran, n'import où.'''
+        ws = Window.size
         xy_abs = int(touch.pos[0]), int(touch.pos[1])
-        x_rel = float(xy_abs[0]) / self.ws[0]
-        y_rel = float(xy_abs[1]) / self.ws[1]
+        x_rel = float(xy_abs[0]) / ws[0]
+        y_rel = float(xy_abs[1]) / ws[1]
         print("Mouse Relative Position {} {}".format(x_rel, y_rel))
         # OSC
-        bundle = OSCBundle()
-        msgx = OSCMessage('/1/xy/x')
-        msgx.append(x_rel)
-        bundle.append(msgx)
-        msgy = OSCMessage('/1/xy/y')
-        msgy.append(y_rel)
-        bundle.append(msgy)
-        self.clt.sendto(bundle, self.clt_addr)
+        msg = OSCMessage('/1/xy')
+        msg.append(x_rel)
+        msg.append(y_rel)
+        self.clt.sendto(msg, self.clt_addr)
 
 
 class Screen2(Screen):
@@ -332,14 +331,11 @@ class Screen3(Screen):
         print("Mouse Relative Position {} {}".format(x, y))
 
         # OSC
-        bundle = OSCBundle()
-        msgx = OSCMessage('/3/xy/x')
-        msgx.append(x)
-        bundle.append(msgx)
-        msgy = OSCMessage('/3/xy/y')
-        msgy.append(y)
-        bundle.append(msgy)
-        self.clt.sendto(bundle, self.clt_addr)
+        if x and y:
+            msg = OSCMessage('/3/xy')
+            msg.append(x)
+            msg.append(y)
+            self.clt.sendto(msg, self.clt_addr)
 
     def do_slider(self, iD, instance, value):
         '''Call if slider change.'''
@@ -413,18 +409,23 @@ def xy_correction(x, y):
     a2 = 0.50
     b1 = 0.09
     b2 = 0.97
+
     if x <= a1:
         x = 0.0
     elif x >= a2:
         x = 1.0
+        y = None
     elif a1 < x < a2:
         x = (x / (a2 - a1)) - a1 / (a2- a1)
-    if y <= b1:
-        y = 0.0
-    elif y >= b2:
-        y = 1.0
-    elif b1 < y < b2:
-        y = (y / (b2 - b1)) - b1 / (b2- b1)
+
+    if y:
+        if y <= b1:
+            y = 0.0
+        elif y >= b2:
+            y = 1.0
+        elif b1 < y < b2:
+            y = (y / (b2 - b1)) - b1 / (b2- b1)
+
     return x, y
 
 # Liste des écrans
@@ -456,31 +457,31 @@ class TapOSCApp(App):
         Si il manque seulement des lignes, il ne fait rien !
         '''
         config.setdefaults('network',
-            {'host': '192.168.1.4',
-              'receive_port': '9000',
-              'send_port': '8000'})
+                            {'host': '192.168.1.4',
+                              'receive_port': '9000',
+                              'send_port': '8000'})
         config.setdefaults('kivy',
-            {'log_level': 'debug',
-              'log_name': 'tapOSC_%y-%m-%d_%_.txt',
-              'log_dir': '/sdcard',
-              'log_enable': '1'})
+                            {'log_level': 'debug',
+                              'log_name': 'tapOSC_%y-%m-%d_%_.txt',
+                              'log_dir': '/sdcard',
+                              'log_enable': '1'})
         config.setdefaults('postproc',
-            {'double_tap_time': 250,
-              'double_tap_distance': 20})
+                            {'double_tap_time': 250,
+                              'double_tap_distance': 20})
 
     def build_settings(self, settings):
         '''Construit l'interface de l'écran Options, pour TapOSC seul,
         Kivy est par défaut, appelé par app.open_settings() dans .kv
         '''
-        data = '''[{"type": "title", "title": "Network configuration"},
-                    {"type": "string", "title": "Host",
-                      "desc": "Ip address to use",
+        data = '''[{"type": "title", "title": "Configuration du réseau"},
+                    {"type": "string", "title": "Adresse IP d'envoi",
+                      "desc": "Adresse Ip de l'appareil qui reçoit",
                       "section": "network", "key": "host"},
-                    {"type": "numeric", "title": "Send port",
-                      "desc": "Send port to use, from 1024 to 65535",
+                    {"type": "numeric", "title": "Port d'envoi",
+                      "desc": "Port d'envoi, de 1024 à 65535",
                       "section": "network", "key": "send_port"},
-                    {"type": "numeric", "title": "Receive port",
-                      "desc": "Receive port to use, from 1024 to 65535",
+                    {"type": "numeric", "title": "Port de réception",
+                      "desc": "Port de réception, de 1024 à 65535",
                       "section": "network", "key": "receive_port"}]'''
 
         # self.config est le config de build_config
@@ -502,6 +503,9 @@ class TapOSCApp(App):
                 for i in range(len(SCREENS)):
                     self.screen_manager.get_screen(SCREENS[i][1])\
                                                 .reset_address(clt_addr)
+                # Update android_only
+                self.screen_manager.get_screen("Menu").android_thread.\
+                                                       reset_address(clt_addr)
 
             if token == ('network', 'receive_port'):
                 # Restart the server with new address
