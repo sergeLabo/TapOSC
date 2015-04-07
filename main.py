@@ -26,12 +26,16 @@ Copyright (C) Labomedia March 2015
 '''
 
 
-__version__ = '0.58'
+__version__ = '0.63'
 
 
 '''
 version
-0.58 on config change pour window rotation
+0.63 freq de 1 à 60
+0.61 int(value)
+0.60 bug freq toujours là
+0.59 avec frequence d'envoi des acc
+0.58 on config change pour window rotation, bug oblige à relancer
 0.57 buildozer avec landscape, définir rotation dans settings pour portrait
 0.56 30 fps
 0.55 liste pour acc
@@ -84,7 +88,8 @@ def get_lan_ip():
 class AndroidOnly(object):
     '''Cette classe crée un thread si un accéléromètre existe, et si oui
     envoie les accélérations à 60 fps.'''
-    def __init__(self, clt, address):
+
+    def __init__(self, clt, address, freq):
         '''Clt pour cette classe seule, Address = Client address.'''
         self.hardware = None
         self.acc_thread = None
@@ -92,9 +97,9 @@ class AndroidOnly(object):
         print("Platform = {}".format(self.platform))
         self.loop = 1
         # Osc Client de MainScreen
-        #self.android_clt = OSCClient()
         self.android_clt = clt
         self.address = address
+        self.freq = freq
 
         # Il faut vérifier sur plusieurs téléphones: linux3
         if 'linux3' in self.platform:
@@ -115,7 +120,18 @@ class AndroidOnly(object):
             msg.append([acc[1], acc[0], acc[2]])
             self.android_clt.sendto(msg, self.address)
             # 60 fps: 0.015
-            sleep(0.03)
+            if self.freq != 0:
+                periode = 1.0 / float(self.freq)
+                # Maxi 60 Hz
+                if periode < 0.015:
+                    periode = 0.015
+            else:
+                # Mini = 1 Hz
+                periode = 1
+            sleep(periode)
+
+    def reset_freq(self, freq):
+        self.freq = freq
 
     def reset_address(self, address):
         self.address = address
@@ -129,16 +145,28 @@ class AndroidOnly(object):
 class MainScreen(Screen):
     '''Crée le client OSC qui est toujours le même, seule l'adresse utilisée
     par sendto est mise à jour.'''
+
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         # OSC client isn't connected, created without address
         # sendto use address, if address change, adress only must be updated
         self.clt = OSCClient()
         self.clt_addr, self.svr_addr = self.get_clt_svr_address()
-        self.android_thread = AndroidOnly(self.clt, self.clt_addr)
+        self.freq = self.get_freq()
+        self.android_thread = AndroidOnly(self.clt, self.clt_addr, self.freq)
         self.server = None
         self.create_server(self.svr_addr)
         print("Main Screen init ok")
+
+    def get_freq(self):
+        '''Return freq with config.'''
+        config = TapOSCApp.get_running_app().config
+        freq = int(config.get('network', 'freq'))
+        return freq
+
+    def change_android_freq(self, freq):
+        '''Sert à rien'''
+        self.android_thread.reset_freq(freq)
 
     def create_server(self, svr_addr):
         '''Create a thread with OSC server.'''
@@ -461,7 +489,8 @@ class TapOSCApp(App):
         config.setdefaults('network',
                             {'host': '192.168.1.4',
                               'receive_port': '9000',
-                              'send_port': '8000'})
+                              'send_port': '8000',
+                              'freq': '10'})
         config.setdefaults('kivy',
                             {'log_level': 'debug',
                               'log_name': 'tapOSC_%y-%m-%d_%_.txt',
@@ -484,7 +513,11 @@ class TapOSCApp(App):
                       "section": "network", "key": "send_port"},
                     {"type": "numeric", "title": "Port de réception",
                       "desc": "Port de réception, de 1024 à 65535",
-                      "section": "network", "key": "receive_port"}]'''
+                      "section": "network", "key": "receive_port"},
+                      {"type": "numeric",
+                      "title": "Fréquence d'envoi des accélérations",
+                      "desc": "Fréquence entre 1 et 60 Hz",
+                      "section": "network", "key": "freq"}]'''
 
         # self.config est le config de build_config
         settings.add_json_panel('TapOSC', self.config, data=data)
@@ -494,11 +527,11 @@ class TapOSCApp(App):
         host = self.config.get('network', 'host')
         sport = int(self.config.get('network', 'send_port'))
         rport = int(self.config.get('network', 'receive_port'))
+        menu = self.screen_manager.get_screen("Menu")
         if config is self.config:
             token = (section, key)
             # If host ou send port change
-            if token == ('network', 'send_port') or token == ('network',
-                                                              'host'):
+            if token == ('network', 'send_port') or token == ('network', 'host'):
                 # Reset OSC client address only in all screen
                 clt_addr = host, sport
                 # Update address client in every Screen
@@ -506,17 +539,19 @@ class TapOSCApp(App):
                     self.screen_manager.get_screen(SCREENS[i][1])\
                                                 .reset_address(clt_addr)
                 # Update android_only
-                self.screen_manager.get_screen("Menu").android_thread.\
-                                                       reset_address(clt_addr)
+                menu.android_thread.reset_address(clt_addr)
 
             if token == ('network', 'receive_port'):
                 # Restart the server with new address
                 self.screen_manager.get_screen("Menu").restart_server()
 
+            if token == ('network', 'freq'):
+                # Restart android with new frequency
+                menu.android_thread.reset_freq(int(value))
+
         if section == 'graphics' and key == 'rotation':
             Config.set('graphics', 'rotation', int(value))
             print("Screen rotation = {}".format(value))
-
 
     def go_mainscreen(self):
         '''Retour au menu principal depuis les autres écrans.'''

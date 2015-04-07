@@ -47,6 +47,9 @@ Open a terminal in root directory
 
  python main.py
 
+## Bug connu
+La rotation de l'écran dans les options ne s'applique pas immédiatement,
+il faut relancer l'application.
 
 ##Thank's to:
 Labomedia
