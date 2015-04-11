@@ -18,7 +18,7 @@
         Label:
             text: '''Envoyez et recevez des données en OSC\n        avec votre smartphone'''
             size_hint_y: 0.2
-            font_size: "24dp"
+            font_size: "18dp"
             color: (0, 1, 0, 1)
         BoxLayout:
             size_hint_y: 0.06
@@ -27,25 +27,25 @@
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Ecran 1'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: root.manager.current = ("Ecran 1")
             Button:
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Ecran 2'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: root.manager.current = ("Ecran 2")
             Button:
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Ecran 3'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: root.manager.current = ("Ecran 3")
             Button:
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Ecran 4'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: root.manager.current = ("Ecran 4")
 
         BoxLayout:
@@ -55,13 +55,13 @@
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Options'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: app.open_settings()
             Button:
                 background_color: (0.8, 0.8, 0, 1)
                 text: 'Quitter'
                 color: (0, 1, 0, 1)
-                font_size: "28dp"
+                font_size: "22dp"
                 on_release: app.do_quit()
 
 <Screen1>:
@@ -77,12 +77,6 @@
             size_hint_y: 0.50
             font_size: "36dp"
             text: "Position xy"
-            color: (0, 1, 0, 1)
-        Label:
-            id: accelerometer
-            size_hint_y: 0.45
-            font_size: "36dp"
-            text: "Accéléromètre"
             color: (0, 1, 0, 1)
         BoxLayout:
             size_hint_y: 0.05

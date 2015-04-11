@@ -22,7 +22,7 @@ Python 2.7: buildozer doesn't work with python 3.4 in march 2015
 simpleOSC or TUIO doesn't support python 3.4.
 And TUIO documentation is to poor.
 
-I want to migrate my code to python 3.4 when buildozer work with python 3.
+I want to migrate my code to python 3.4
 
 Pyhton3 OSC.py version is on github
 
@@ -50,6 +50,9 @@ Open a terminal in root directory
 ## Bug connu
 La rotation de l'écran dans les options ne s'applique pas immédiatement,
 il faut relancer l'application.
+
+Configurer KIVY dans les options avec Double Tap, pour que les boutons Menu
+et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
 
 ##Thank's to:
 Labomedia
