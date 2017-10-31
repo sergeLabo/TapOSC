@@ -1,5 +1,6 @@
 ## TapOSC
 #### by Labomedia
+
 TapOSC is an Android Application, made with Kivy.
 
 TapOSC is OSC control surface for smartphone.
@@ -11,33 +12,30 @@ TapOSC n'est pas une pipe.
 
 See [TapOSC](http://wiki.labomedia.org/index.php/Kivy:_TapOSC)
 
-## Info
 ### Android app
+
 Compiled with buildozer
 
-### Python 2.7
-Python 2.7: buildozer doesn't work with python 3.4 in march 2015
+### Python 3.5
 
 ### OSC
-simpleOSC or TUIO doesn't support python 3.4.
-And TUIO documentation is to poor.
 
-I want to migrate my code to python 3.4
+Pyhton 3 OSC3.py
 
-Pyhton3 OSC.py version is on github
+### Installation
 
-## Installation
-### Dependancy
-#### python-kivy
-[See Installation](http://wiki.labomedia.org/index.php/2_Kivy:_Installation)
+#### kivy pour python3
+sudo apt-get install cython3 xclip xsel
+sudo pip3 install kivy
 
 #### pyjnuis
 
-[Installation of pyjnuis](http://pyjnius.readthedocs.org/en/latest/installation.html)
+ sudo pip install cython
+ sudo pip install jnius
 
-sudo pip install cython
+#### Buildozer
 
-sudo pip install jnius
+
 
 ### Installation on tablet or phone with ANDROID
 Download the TapOSC.apk file, install it.
@@ -45,14 +43,21 @@ Download the TapOSC.apk file, install it.
 ### Test on your PC
 Open a terminal in root directory
 
- python main.py
+ python3 main.py
 
-## Bug connu
+### Bug connu
 La rotation de l'écran dans les options ne s'applique pas immédiatement,
 il faut relancer l'application.
 
 Configurer KIVY dans les options avec Double Tap, pour que les boutons Menu
 et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
+
+
+####Bidouille pour que python trouve java
+Si platform = linux ajout de
+os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
+
+Le chemin doit être défini en fonction de l'os
 
 ##Thank's to:
 Labomedia
