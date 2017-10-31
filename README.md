@@ -1,51 +1,51 @@
 ## TapOSC
 #### by Labomedia
 
-TapOSC is an Android Application, made with Kivy.
+TapOSC est une application Android, réalisée avec Kivy et buldozer en python 3
 
-TapOSC is OSC control surface for smartphone.
+TapOSC envoie et reçoit en OSC.
 
 TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
 please see LICENSE file for details.
 
 TapOSC n'est pas une pipe.
 
-See [TapOSC](http://wiki.labomedia.org/index.php/Kivy:_TapOSC)
-
-### Android app
-
-Compiled with buildozer
-
-### Python 3.5
+See [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC)
 
 ### OSC
 
-Pyhton 3 OSC3.py
+OSC3.py pour python3
 
 ### Installation
 
 #### kivy pour python3
+
+~~~text
 sudo apt-get install cython3 xclip xsel
 sudo pip3 install kivy
+~~~
 
 #### pyjnuis
 
- sudo pip install cython
- sudo pip install jnius
+~~~text
+sudo pip install cython
+sudo pip install jnius
+~~~
 
-#### Buildozer
+### Installation sur ANDROID
 
+Télécharger TapOSC.apk et l'installer en autorisant les sources inconnues.
 
+### Test surr PC
 
-### Installation on tablet or phone with ANDROID
-Download the TapOSC.apk file, install it.
+Ouvrir un terminal dans le dossier de main.py
 
-### Test on your PC
-Open a terminal in root directory
-
- python3 main.py
+~~~text
+python3 main.py
+~~~
 
 ### Bug connu
+
 La rotation de l'écran dans les options ne s'applique pas immédiatement,
 il faut relancer l'application.
 
@@ -59,5 +59,5 @@ os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
 
 Le chemin doit être défini en fonction de l'os
 
-##Thank's to:
-Labomedia
+### Merci à
+* Labomedia
