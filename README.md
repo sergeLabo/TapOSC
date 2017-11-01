@@ -54,8 +54,12 @@ et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
 
 
 ####Bidouille pour que python trouve java
+
 Si platform = linux ajout de
+
+~~~text
 os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
+~~~
 
 Le chemin doit être défini en fonction de l'os
 

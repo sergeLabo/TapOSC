@@ -1,36 +1,37 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-TapOSC est une Application Android construite avec kivy
-et compilée avec Buildozer
+######################################################################
+# TapOSC est une Application Android construite avec kivy
+# et compilée avec Buildozer
+#
+# ZORG: "Vous voulez quelque chose, faites le vous même !"
+#
+# Copyright (C) Labomedia March 2015
+#
+# This file is part of TapOSC.
+#
+# TapOSC is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# TapOSC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with TapOSC.  If not, see <http://www.gnu.org/licenses/>. 2
+######################################################################
 
-ZORG: "Vous voulez quelque chose, faites le vous même !"
 
-Copyright (C) Labomedia March 2015
-
-    This file is part of TapOSC.
-
-    TapOSC is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    TapOSC is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with TapOSC.  If not, see <http://www.gnu.org/licenses/>. 2
-"""
-
-
-__version__ = '0.70'
+__version__ = '0.71'
 
 
 """
 version
+0.71 pyjnius au lieu de jnuis
 0.70 python 3.5sur debian 9.2 stretch
 0.67 xy envoyé seulement si move, pas sur seul clic,
     ajout de on_touch_up() et on_touch_down() mais bloque "Menu"
