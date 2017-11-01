@@ -18,19 +18,10 @@ OSC3.py pour python3
 
 ### Installation
 
-#### kivy pour python3
+* [Kivy et pyjnius](https://wiki.labomedia.org/index.php/2_Kivy:_Installation)
+* [Buildozer](https://wiki.labomedia.org/index.php/Kivy_Buildozer_pour_cr%C3%A9er_une_application_Android_avec_un_script_python#Version_M.C3.A9thode_2)
 
-~~~text
-sudo apt-get install cython3 xclip xsel
-sudo pip3 install kivy
-~~~
 
-#### pyjnuis
-
-~~~text
-sudo pip install cython
-sudo pip install jnius
-~~~
 
 ### Installation sur ANDROID
 

@@ -26,11 +26,13 @@
 ######################################################################
 
 
-__version__ = '0.71'
+__version__ = '0.72'
 
 
 """
 version
+0.73 toposc
+0.72 dépendances en plus
 0.71 pyjnius au lieu de jnuis
 0.70 python 3.5sur debian 9.2 stretch
 0.67 xy envoyé seulement si move, pas sur seul clic,

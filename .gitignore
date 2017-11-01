@@ -13,3 +13,4 @@ target/
 
 # buildozer
 ./buildozer
+./buildozer/*
