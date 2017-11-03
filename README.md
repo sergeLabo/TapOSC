@@ -3,14 +3,24 @@
 
 TapOSC est une application Android, réalisée avec Kivy et buldozer en python 3
 
-TapOSC envoie et reçoit en OSC.
+### buildozer est en développement
+
+En novembre 2017, buildozer est en développement pour python 3.
+
+Les apk ne marche pas, buildozer mélange du python2 et du python 3.
+
+TapOSC aurait du envoyer et reçevoir en OSC.
+
+Par contre, l'application tourne sur PC.
+
+### Sinon
 
 TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
 please see LICENSE file for details.
 
 TapOSC n'est pas une pipe.
 
-See [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC)
+La page [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC) qui concerne le python 2.7
 
 ### OSC
 
@@ -27,7 +37,7 @@ OSC3.py pour python3
 
 Télécharger TapOSC.apk et l'installer en autorisant les sources inconnues.
 
-### Test surr PC
+### Test sur PC
 
 Ouvrir un terminal dans le dossier de main.py
 
@@ -44,7 +54,7 @@ Configurer KIVY dans les options avec Double Tap, pour que les boutons Menu
 et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
 
 
-####Bidouille pour que python trouve java
+#### Bidouille pour que python trouve java sur PC
 
 Si platform = linux ajout de
 

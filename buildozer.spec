@@ -37,8 +37,8 @@ version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = python3crystax,kivy,pyjnius
-python3crystax==3.5
+requirements = python3crystax==3.5,kivy
+#python3crystax==3.5
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -99,7 +99,7 @@ android.permissions = INTERNET
 #android.sdk = 20
 
 # (str) Android NDK version to use
-#android.ndk = 9c
+android.ndk = 10.3.2
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
@@ -185,7 +185,7 @@ android.ndk_path = /home/pierre/crystax-ndk-10.3.2
 #android.copy_libs = 1
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86
-android.arch = armeabi
+android.arch = armeabi-v7a
 
 #
 # Python for android (p4a) specific
