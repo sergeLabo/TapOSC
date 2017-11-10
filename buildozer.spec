@@ -37,7 +37,7 @@ version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = python3crystax==3.5,kivy
+requirements = python3crystax==3.5,kivy,pyjnius
 #python3crystax==3.5
 
 # (str) Custom source folders for requirements
@@ -87,7 +87,7 @@ fullscreen = 0
 #android.presplash_color = #FFFFFF
 
 # (list) Permissions
-android.permissions = INTERNET
+android.permissions = INTERNET,CHANGE_WIFI_MULTICAST_STATE,ACCESS_NETWORK_STATE,ACCESS_WIFI_STATE
 
 # (int) Android API to use
 #android.api = 19

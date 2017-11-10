@@ -9,5 +9,5 @@ __pycache__/
 *.project
 
 # buildozer
-.buildozer
+.buildozer/
 bin/
