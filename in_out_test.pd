@@ -1,4 +1,4 @@
-#N canvas 1727 56 1091 732 12;
+#N canvas 1479 118 1091 732 12;
 #X obj 12 70 unpackOSC;
 #X obj 12 105 pipelist;
 #X obj 12 180 routeOSC /xy;
@@ -12,17 +12,17 @@
 #X obj 138 246 routeOSC /acc;
 #X obj 258 180 routeOSC /s1;
 #X obj 366 200 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 4235 1;
 #X obj 366 232 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 5359 1;
 #X obj 258 212 routeOSC /s2;
 #X text 5 5 Receive test:;
 #X obj 366 265 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 5154 1;
 #X obj 366 297 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 4178 1;
 #X obj 365 332 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
--1 -1 0 1;
+-1 -1 6471 1;
 #X obj 364 369 hsl 100 10 0 1 0 0 empty empty empty -2 -8 0 10 -4032
 -1 -1 0 1;
 #X obj 258 245 routeOSC /s3;
@@ -30,11 +30,11 @@
 #X obj 258 312 routeOSC /s5;
 #X obj 258 349 routeOSC /s6;
 #X obj 483 201 vsl 10 150 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 5565 1;
 #X obj 442 169 routeOSC /s7;
 #X obj 442 145 routeOSC /s8;
 #X obj 500 201 vsl 10 150 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 0 1;
+-1 -1 5141 1;
 #X obj 363 587 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 258 376 routeOSC /b1;
@@ -105,7 +105,7 @@
 #X msg 567 653 disconnect;
 #X obj 675 641 packOSC;
 #X obj 675 673 udpsend;
-#X obj 632 693 tgl 15 0 empty empty empty 8 -8 0 10 -4034 -1 -1 0 1
+#X obj 632 693 tgl 15 0 empty empty empty 8 -8 0 10 -4034 -1 -1 1 1
 ;
 #X obj 12 34 udpreceive 8000;
 #X msg 675 581 t 0;
@@ -114,7 +114,8 @@
 #X text 670 488 Send example;
 #X msg 675 549 t anticonstitutionnellement;
 #X msg 675 612 send /info \$1;
-#X msg 674 516 connect 192.168.1.17 8080;
+#X obj 772 661 print;
+#X msg 674 516 connect 192.168.1.1 8080;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 1 0 6 0;
@@ -184,6 +185,7 @@
 #X connect 70 0 65 0;
 #X connect 71 0 73 0;
 #X connect 72 0 73 0;
+#X connect 72 0 82 0;
 #X connect 73 0 74 0;
 #X connect 75 0 0 0;
 #X connect 76 0 81 0;
@@ -193,4 +195,4 @@
 #X connect 78 1 44 0;
 #X connect 80 0 81 0;
 #X connect 81 0 72 0;
-#X connect 82 0 73 0;
+#X connect 83 0 73 0;

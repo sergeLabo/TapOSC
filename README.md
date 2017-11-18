@@ -1,26 +1,20 @@
 ## TapOSC
 #### by Labomedia
 
-TapOSC est une application Android, réalisée avec Kivy et buldozer en python 3
+TapOSC est une application Android, réalisée avec Kivy et buildozer en python 3
 
-### buildozer est en développement
+### buildozer pour python 3.x est en développement
 
-En novembre 2017, buildozer est en développement pour python 3.
+TapOSC envoie et reçoit en OSC.
 
-Les apk ne marche pas, buildozer mélange du python2 et du python 3.
-
-TapOSC aurait du envoyer et reçevoir en OSC.
-
-Par contre, l'application tourne sur PC.
-
-### Sinon
+### Licence
 
 TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
 please see LICENSE file for details.
 
 TapOSC n'est pas une pipe.
 
-La page [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC) qui concerne le python 2.7
+La page [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC)
 
 ### OSC
 
@@ -30,7 +24,6 @@ OSC3.py pour python3
 
 * [Kivy et pyjnius](https://wiki.labomedia.org/index.php/2_Kivy:_Installation)
 * [Buildozer](https://wiki.labomedia.org/index.php/Kivy_Buildozer_pour_cr%C3%A9er_une_application_Android_avec_un_script_python#Version_M.C3.A9thode_2)
-
 
 
 ### Installation sur ANDROID

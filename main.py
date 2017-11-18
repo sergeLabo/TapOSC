@@ -26,54 +26,23 @@
 ######################################################################
 
 
-__version__ = '0.94'
+__version__ = '0.955'
 
 
 """
 version
-0.94 avec pyjnius
-0.92 avec getIP
-0.91 plus d'accent dans main
-0.90 plus d'accent dans kv
-0.84 OSC3
-0.83 ndk 10.3.2
-0.82 avec OSC3
-0.81 mylabotools
-0.80 from labtools import OSC3
-0.79 avec requirements labtools.OSC3
-0.78 avec labtools installer
-0.77 dossier debug = kivy
-0.76 plus d'accent, pas de jnius dans les requis
-0.75 nouveau buildozer
-0.74 sans jnius
-0.73 toposc
-0.72 dependances en plus
-0.71 pyjnius au lieu de jnuis
-0.70 python 3.5sur debian 9.2 stretch
-0.67 xy envoye seulement si move, pas sur seul clic,
-    ajout de on_touch_up() et on_touch_down() mais bloque "Menu"
-0.66 main propre
-0.65 acc a 0.01 pres, xy a 0.01 pres, plus de float(int(float()))
-0.64 acc envoye si nouveau, debit xy jusque 73 Hz, beaucoup trop
+0.955 sans get ip, sans android, ip serveur revu, sans acceleration
+version suivante en python 3
+0.67 version python2
 """
 
 
-import sys, os, subprocess, re
-import socket
-import fcntl
-import struct
-from time import sleep
+import os
+
+# Bidouille pour que python trouve java sur mon PC
+##os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
+
 import threading
-from functools import reduce
-
-# Bidouille pour que python trouve java sur PC
-platform = sys.platform
-print("Platform = {}".format(platform))
-if 'linux' in platform:
-    os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
-
-from jnius import autoclass
-
 import kivy
 from kivy.app import App
 from kivy.uix.button import Button
@@ -81,62 +50,18 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.core.window import Window
 from kivy.config import Config
-
-#from mylabotools import OSC3
-#OSC3.OSCClient, OSCMessage, OSCServer
 import OSC3
 
 
-def get_my_ip():
-    """Get local ip sur debian
-    A generator that returns stripped lines of output from "ip address show"
-    """
-
-    iplines=(line.strip() for line in \
-                        subprocess.getoutput("ip address show").split('\n'))
-
-    #Turn that into a list of IPv4 and IPv6 address/mask strings
-    addresses1=reduce(lambda a,v:a+v,(re.findall(r"inet ([\d.]+/\d+)",line) \
-            +re.findall(r"inet6 ([\:\da-f]+/\d+)",line) for line in iplines))
-
-    #Get a list of IPv4 addresses as (IPstring,subnetsize) tuples
-    ipv4s=[(ip,int(subnet)) for ip,subnet in (addr.split('/') for addr in \
-                                                addresses1 if '.' in addr)]
-
-    my_ip = ipv4s[1][0]
-
-    return my_ip
-
-
-'''
-This module allows you to get the IP address of your Kivy/python-for-android app.
-It was created by Ryan Marvin and is free to use. (marvinryan@ymail.com)
-Credit to Bruno Adele for the int_to_ip method
-'''
-#Required : ACCESS_WIFI_STATE permission, pyjnius
-
-def int_to_ip(ipnum):
-    oc1 = int(ipnum / 16777216) % 256
-    oc2 = int(ipnum / 65536) % 256
-    oc3 = int(ipnum / 256) % 256
-    oc4 = int(ipnum) % 256
-    return '%d.%d.%d.%d' %(oc4,oc3,oc2,oc1)
-
-def getIP():
-    from jnius import autoclass
-
-    PythonActivity = autoclass('org.renpy.android.PythonActivity')
-    SystemProperties = autoclass('android.os.SystemProperties')
-    Context = autoclass('android.content.Context')
-    wifi_manager = PythonActivity.mActivity.getSystemService(Context.WIFI_SERVICE)
-    ip = wifi_manager.getConnectionInfo()
-    ip = ip.getIpAddress()
-    ip = int_to_ip(int(ip))
-
-    print("IP locale", ip)
-
+def get_my_LAN_ip():
+    # Oui, pas d'import sauvage
+    import socket
+    sok = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sok.connect(("8.8.8.8", 80))
+    ip = sok.getsockname()[0]
+    sok.close()
+    print("LAN Ip =", ip)
     return ip
-
 
 def xy_correction(x, y):
     """Retourne x, y recalcule au dessus du bouton, de 0 a 1."""
@@ -210,77 +135,6 @@ def test_old_new_xy(xy_old, xy_new):
     return ret
 
 
-class AndroidOnly():
-    """Cette classe cree un thread si un accelerometre existe, et si oui
-    envoie les accelerations a la frequence definie dans les options."""
-
-    def __init__(self, clt, address, freq):
-        """Clt pour cette classe seule, Address = Client address."""
-
-        self.hardware = None
-        self.acc_thread = None
-        self.platform = sys.platform
-        print("Platform = {}".format(self.platform))
-        self.loop = 1
-        # Osc Client de MainScreen
-        self.android_clt = clt
-        self.address = address
-        self.freq = freq
-        self.acc = [0, 0, 0]
-
-        # Il faut verifier sur plusieurs telephones: linux3
-        if 'linux3' in self.platform:
-            try:
-                self.hardware = autoclass('org.renpy.android.Hardware')
-                self.hardware.accelerometerEnable(True)
-                self.acc_thread = threading.Thread(target=self.send_acc)
-                self.acc_thread.start()
-            except:
-                print("Pb with Android Hardware")
-        print("AndroidOnly init ok")
-
-    def send_acc(self):
-        """Infinite loop to send acc if new freq, freq define in options,
-        loop ended with self.loop.
-        """
-
-        while self.loop:
-            try:
-                acc = self.hardware.accelerometerReading()
-            except:
-                acc = [0, 0, 0]
-            if 1:  #test_old_new_acc(self.acc, acc):
-                try:
-                    msg = OSCMessage('/1/acc')
-                    msg.append([acc[1], acc[0], acc[2]])
-                    self.android_clt.sendto(msg, self.address)
-                except:
-                    pass
-            # 60 fps: 0.015
-            if self.freq != 0:
-                periode = 1.0 / float(self.freq)
-                # Maxi 60 Hz
-                if periode < 0.015:
-                    periode = 0.015
-            else:
-                # Mini = 1 Hz
-                periode = 1
-            self.acc = acc
-            sleep(periode)
-
-    def reset_freq(self, freq):
-        self.freq = freq
-
-    def reset_address(self, address):
-        self.address = address
-
-    def stop_loop(self):
-        """Stoppe la boucle infinie de send_acc."""
-
-        print("AndroidOnly loop stop")
-        self.loop = 0
-
-
 class MainScreen(Screen):
     """Cree le client OSC qui est toujours le meme, seule l'adresse utilisee
     par sendto est mise a jour."""
@@ -292,30 +146,19 @@ class MainScreen(Screen):
         # OSC client isn't connected, created without address
         # sendto use address, if address change, adress only must be updated
         self.clt = OSC3.OSCClient()
-        self.clt_addr, self.svr_addr = self.get_clt_svr_address()
-
-        self.freq = self.get_freq()
-
-        self.android_thread = AndroidOnly(self.clt, self.clt_addr, self.freq)
+        self.clt_addr, self.rport = self.get_clt_svr_address()
 
         self.server = None
-        self.create_server(self.svr_addr)
+        self.create_server()
         print("Main Screen init ok")
 
-    def get_freq(self):
-        """Return freq with config."""
-
-        config = TapOSCApp.get_running_app().config
-        freq = int(config.get('network', 'freq'))
-        return freq
-
-    def create_server(self, svr_addr):
+    def create_server(self):
         """Create a thread with OSC server."""
 
-        # OSC Server only to receive OSC message from host with default "/info"
-        svr_addr = self.get_clt_svr_address()[1]
-
-        self.server = OSC3.OSCServer(svr_addr)
+        # OSC Server recoit seulemnt les messages OSC  "/info"
+        # Ip serveur
+        ip = get_my_LAN_ip()
+        self.server = OSC3.OSCServer((ip, self.rport))
         self.server.addMsgHandler("/info", self.info_handler)
 
         t_server = threading.Thread(target=self.server.serve_forever)
@@ -327,10 +170,9 @@ class MainScreen(Screen):
         if self.server:
             self.server.close()
 
-        svr_addr = self.get_clt_svr_address()[1]
-        self.create_server(svr_addr)
+        self.create_server()
 
-        print("Server restart with {}".format(svr_addr))
+        print("Server restart with port {}".format(self.rport))
 
     def info_handler(self, addr, tags, stuff, source):
         """Called if /info tag receive. Set Text info in ScreenX"""
@@ -345,35 +187,28 @@ class MainScreen(Screen):
                 screen_manager.get_screen(scr).set_info(stuff)
 
     def reset_address(self, address):
-        """Reset client address in Android."""
+        """Reset client address."""
 
         self.clt_addr = address
-        self.android_thread.reset_address(address)
 
         print("MainScreen: Reset OSC address with {}".format(address))
 
     def get_clt_svr_address(self):
-        """Return address with config, and set self.clt_addr"""
+        """Retourne adresse client et port serveur"""
 
         config = TapOSCApp.get_running_app().config
         host = config.get('network', 'host')
         sport = int(config.get('network', 'send_port'))
-        rport = int(config.get('network', 'receive_port'))
         self.clt_addr = host, sport
 
-        try:
-            ip = getIP()  #get_my_ip()
-        except:
-            ip = "127.0.0.1"
+        self.rport = int(config.get('network', 'receive_port'))
 
-        print("Ip server {} port {}".format(ip, rport))
 
-        self.svr_addr = ip, rport
+        print("Le server ecoute le  port {}".format(self.rport))
 
         print("Client Address = {}".format(self.clt_addr))
-        print("Server Address = {}".format(self.svr_addr))
 
-        return self.clt_addr, self.svr_addr
+        return self.clt_addr, self.rport
 
 
 class Screen1(Screen):
@@ -408,10 +243,12 @@ class Screen1(Screen):
 
         # Acces a screen manager dans TapOSCApp
         screen_manager = TapOSCApp.get_running_app().screen_manager
+
         # Acces a l'ecran Menu
         menu = screen_manager.get_screen("Menu")
        # Acces a l'attibut clt
         self.clt = menu.clt
+
         # Acces a address
         self.clt_addr = menu.get_clt_svr_address()[0]
         return self.clt, self.clt_addr
@@ -523,7 +360,6 @@ class Screen3(Screen):
 
         super(Screen3, self).__init__(**kwargs)
 
-        self.ws = Window.size
         self.clt, self.clt_addr = self.get_clt_and_address()
         print("OSC Client = {} address = {}".format(self.clt, self.clt_addr))
 
@@ -686,6 +522,7 @@ class TapOSCApp(App):
     def build(self):
         """Execute en premier apres run()"""
 
+        print("build begining")
         # Creation des ecrans
         self.screen_manager = ScreenManager()
         for i in range(len(SCREENS)):
@@ -758,16 +595,11 @@ class TapOSCApp(App):
                 for i in range(len(SCREENS)):
                     self.screen_manager.get_screen(SCREENS[i][1])\
                                                 .reset_address(clt_addr)
-                # Update android_only
-                menu.android_thread.reset_address(clt_addr)
 
             if token == ('network', 'receive_port'):
                 # Restart the server with new address
                 self.screen_manager.get_screen("Menu").restart_server()
 
-            if token == ('network', 'freq'):
-                # Restart android with new frequency
-                menu.android_thread.reset_freq(int(value))
 
         if section == 'graphics' and key == 'rotation':
             Config.set('graphics', 'rotation', int(value))
@@ -780,16 +612,13 @@ class TapOSCApp(App):
         self.screen_manager.current = ("Menu")
 
     def do_quit(self):
-        """Quit propre, stop le thread Android, le client, le serveur."""
+        """Quit propre, stop le client, le serveur."""
 
         # Acces a screen manager dans TapOSCApp
         screen_manager = TapOSCApp.get_running_app().screen_manager
-
         # Acces a l'ecran Menu
         menu = screen_manager.get_screen("Menu")
 
-        ### Stop thread andoid
-        menu.android_thread.stop_loop()
         print("Quit in TapOSCApp(App)")
 
         # Voir OSC.py, running is set to True with serve_forever
@@ -798,8 +627,8 @@ class TapOSCApp(App):
         # Kivy
         TapOSCApp.get_running_app().stop()
 
-        # La bombe
-        sys.exit()
+        # Fin
+        os._exit(0)
 
 
 if __name__ == '__main__':
