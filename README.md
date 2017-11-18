@@ -46,6 +46,10 @@ il faut relancer l'application.
 Configurer KIVY dans les options avec Double Tap, pour que les boutons Menu
 et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
 
+### Développement prévu
+
+* rajouter les accents
+* envoyer les accélérations
 
 #### Bidouille pour que python trouve java sur PC
 
