@@ -3,22 +3,32 @@
 
 TapOSC est une application Android, réalisée avec Kivy et buildozer en python 3
 
-### buildozer pour python 3.x est en développement
-
 TapOSC envoie et reçoit en OSC.
+
+TapOSC n'est pas une pipe.
+
+
+Documentation à [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC)
+
+### Buildozer
+
+TapOSC est construit avec kivy en python 3.5,
+
+et est compilée avec buildozer pour obtenir un apk, une application Android
+
+Buildozer pour python 3.x est en développement
 
 ### Licence
 
 TapOSC is an Open Source project under GNU GENERAL PUBLIC LICENSE Version 2,
 please see LICENSE file for details.
 
-TapOSC n'est pas une pipe.
-
-La page [TapOSC](https://wiki.labomedia.org/index.php/Kivy:_TapOSC)
-
 ### OSC
 
 OSC3.py pour python3
+
+[Documentation très perfectible](https://wiki.labomedia.org/index.php/Open_Sound_Control_:_OSC)
+
 
 ### Installation
 
@@ -50,16 +60,6 @@ et Quitter ne s'active pas sur l'écran 1, lors de l'envoi de x y.
 
 * rajouter les accents
 * envoyer les accélérations
-
-#### Bidouille pour que python trouve java sur PC
-
-Si platform = linux ajout de
-
-~~~text
-os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
-~~~
-
-Le chemin doit être défini en fonction de l'os
 
 ### Merci à
 * Labomedia

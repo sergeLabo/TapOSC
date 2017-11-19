@@ -26,11 +26,12 @@
 ######################################################################
 
 
-__version__ = '0.955'
+__version__ = '0.956'
 
 
 """
 version
+0.956 try pour send msg si pas de reception
 0.955 sans get ip, sans android, ip serveur revu, sans acceleration
 version suivante en python 3
 0.67 version python2
@@ -272,8 +273,16 @@ class Screen1(Screen):
                 msg = OSC3.OSCMessage('/1/xy')
                 msg.append(x)
                 msg.append(y)
-                self.clt.sendto(msg, self.clt_addr)
+                self.send(msg)
                 self.xy_old = xy_new
+
+    def send(self, msg):
+        try:
+            self.clt.sendto(msg, self.clt_addr)
+            self.info = ""
+        except:
+            self.info = "Pas de réception"
+            print("La réception ne tourne pas")
 
 
 class Screen2(Screen):
@@ -328,7 +337,7 @@ class Screen2(Screen):
         # OSC envoi de iD, 1
         msg = OSC3.OSCMessage(iD)
         msg.append(1)
-        self.clt.sendto(msg, self.clt_addr)
+        self.send(msg)
 
     def do_button_off(self, iD, instance):
         """Call if button is on."""
@@ -338,7 +347,7 @@ class Screen2(Screen):
         # OSC envoi de iD, 0
         msg = OSC3.OSCMessage(iD)
         msg.append(0)
-        self.clt.sendto(msg, self.clt_addr)
+        self.send(msg)
 
     def do_slider(self, iD, instance, value):
         """Call if slider change."""
@@ -348,7 +357,15 @@ class Screen2(Screen):
         # OSC envoi de slider value
         msg = OSC3.OSCMessage(iD)
         msg.append(value)
-        self.clt.sendto(msg, self.clt_addr)
+        self.send(msg)
+
+    def send(self, msg):
+        try:
+            self.clt.sendto(msg, self.clt_addr)
+            self.info = ""
+        except:
+            self.info = "Pas de réception"
+            print("La réception ne tourne pas")
 
 
 class Screen3(Screen):
@@ -420,7 +437,7 @@ class Screen3(Screen):
                 msg = OSC3.OSCMessage('/3/xy')
                 msg.append(x)
                 msg.append(y)
-                self.clt.sendto(msg, self.clt_addr)
+                self.send(msg)
                 self.xy_old = xy_new
 
     def do_slider(self, iD, instance, value):
@@ -431,7 +448,15 @@ class Screen3(Screen):
         # OSC envoi de slider value
         msg = OSC3.OSCMessage(iD)
         msg.append(value)
-        self.clt.sendto(msg, self.clt_addr)
+        self.send(msg)
+
+    def send(self, msg):
+        try:
+            self.clt.sendto(msg, self.clt_addr)
+            self.info = ""
+        except:
+            self.info = "Pas de réception"
+            print("La réception ne tourne pas")
 
 
 class Screen4(Screen):
@@ -497,7 +522,15 @@ class Screen4(Screen):
         # OSC
         msg = OSC3.OSCMessage('/4/b')
         msg.append(value)
-        self.clt.sendto(msg, self.clt_addr)
+        self.send(msg)
+
+    def send(self, msg):
+        try:
+            self.clt.sendto(msg, self.clt_addr)
+            self.info = ""
+        except:
+            self.info = "Pas de réception"
+            print("La réception ne tourne pas")
 
 
 class TapOscButton(Button):
